@@ -31,4 +31,4 @@ We appreciate your contribution to improving the security of our projects and fo
 
 ---
 
-\_Last updated: 2024-09-19
+*Last updated: 2024-09-19*
