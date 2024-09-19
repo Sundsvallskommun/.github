@@ -23,8 +23,6 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 - [Reporting Bugs](#reporting-bugs)
 - [Suggesting Enhancements](#suggesting-enhancements)
 - [Your First Code Contribution](#your-first-code-contribution)
-- [Improving The Documentation](#improving-the-documentation)
-- [Styleguides](#styleguides)
 - [Commit Messages](#commit-messages)
 
 ## Code of Conduct
@@ -32,7 +30,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 This project and everyone participating in it is governed by the
 [Sundsvalls Kommun Code of Conduct](https://github.com/Sundsvallskommun/.github/blob/master/CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code. Please report unacceptable behavior
-to .
+to [servicedesk@sundsvall.se](mailto:servicedesk@sundsvall.se).
 
 ## I Have a Question
 
@@ -131,8 +129,6 @@ When making pull requests to the repository, make sure to follow these guideline
 
 - Before creating a pull request, file a GitHub Issue so that maintainers and the community can discuss the problem and potential solutions before you spend time on an implementation.
 - In your PR's description, link to any related issues or pull requests to give reviewers the full context of your change.
-
-## Styleguides
 
 ### Commit Messages
 
