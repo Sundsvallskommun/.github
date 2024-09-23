@@ -28,7 +28,3 @@ We continuously maintain and update our repositories. To ensure the highest leve
 ## Thank You
 
 We appreciate your contribution to improving the security of our projects and for helping to protect the users of our software.
-
----
-
-*Last updated: 2024-09-19*
