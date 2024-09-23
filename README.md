@@ -36,7 +36,7 @@ permissions:
 
 jobs:
   shared-workflows:
-    uses: Sundsvallskommun/shared-workflows/.github/workflows/common-dependabot-reviewer.yml@main
+    uses: Sundsvallskommun/.github/.github/workflows/common-dependabot-reviewer.yml@main
     secrets: inherit
 ```
 
@@ -46,7 +46,7 @@ The following workflows are only compatible to be run in repositories containing
 
 ### Maven CI
 
-Just as you should do before you push your code this workflow runs `mvn -B verify`. Useful to make sure code actually compiles and test passes. Important to use as a required check if you want to implement the dependabot autoreviewer.
+Just as you should do before you push your code this workflow runs `mvn -B verify`. Useful to make sure code actually compiles and test passes. Important to use as a required check if you want to implement the dependabot auto reviewer.
 
 ```
 
@@ -65,7 +65,7 @@ on:
 
 jobs:
   shared-workflows:
-    uses: Sundsvallskommun/shared-workflows/.github/workflows/java-maven-ci.yml@main
+    uses: Sundsvallskommun/.github/.github/workflows/java-maven-ci.yml@main
 
 ```
 
@@ -88,7 +88,7 @@ on:
 
 jobs:
   shared-workflows:
-    uses: Sundsvallskommun/shared-workflows/.github/workflows/java-codeql.yml@main
+    uses: Sundsvallskommun/.github/.github/workflows/java-codeql.yml@main
     permissions:
       actions: read
       contents: read
@@ -110,7 +110,7 @@ on:
 
 jobs:
   shared-workflows:
-        uses: Sundsvallskommun/shared-workflows/.github/workflows/java-maven-publish.yml@main
+        uses: Sundsvallskommun/.github/.github/workflows/java-maven-publish.yml@main
         secrets: inherit
 
 ```
