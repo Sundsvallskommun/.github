@@ -106,13 +106,9 @@ jobs:
 
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1.1.4
-        with:
-          tag_name: ${{ steps.latest_tag.outputs.TO_TAG }}
-          release_name: ${{ steps.latest_tag.outputs.TO_TAG }}
-          body: |
-            ${{ steps.build_changelog.outputs.changelog }}
-            ##
-            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ env.FROM_TAG }}...${{ env.TO_TAG }}
-          draft: false
-          prerelease: false
+        run: |
+          gh release create ${{ steps.latest_tag.outputs.TO_TAG }} \
+            --title "${{ steps.latest_tag.outputs.TO_TAG }}" \
+            --notes "${{ steps.build_changelog.outputs.changelog }} \n##\n**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.from_tag.outputs.FROM_TAG }}...${{ steps.latest_tag.outputs.TO_TAG }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.UTVECKLINGSFABRIKEN_TOKEN }}
