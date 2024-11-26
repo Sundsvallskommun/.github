@@ -9,6 +9,7 @@
 - [ ] Refactoring (no functional changes, no api changes)
 - [ ] Build related changes
 - [ ] Documentation content changes
+- [ ] Content/Data
 
 ## Does this PR introduce a breaking change?
 - [ ] Yes (I have stepped the version number accordingly)
