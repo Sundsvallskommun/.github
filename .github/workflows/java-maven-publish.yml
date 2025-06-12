@@ -78,6 +78,9 @@ jobs:
           MAVEN_PASSWORD: ${GITHUB_TOKEN}
         run: mvn -B release:prepare
 
+      - name: Install parent POM locally
+        run: mvn install -N -DskipTests
+
       - name: Perform release with Maven
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
