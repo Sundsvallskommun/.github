@@ -77,15 +77,11 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.USER_NAME }}
           MAVEN_PASSWORD: ${GITHUB_TOKEN}
         run: mvn -B release:prepare
-
-      - name: Install parent POM locally
-        run: mvn install -N -DskipTests
-
       - name: Perform release with Maven
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-        run: mvn -B release:perform -Darguments="-DskipTests"
+        run: mvn -B -X release:perform -Darguments="-DskipTests"
 
       - name: Get latest tag
         id: latest_tag
