@@ -82,7 +82,7 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: mvn -B release:perform -Darguments="-DskipTests -Dcentral.skipPublishing=false"
+        run: mvn -B release:perform -Darguments="-DskipTests -Dcentral.skipPublishing=false -Dcentral.autoPublish=true"
 
       - name: Get latest tag
         id: latest_tag
