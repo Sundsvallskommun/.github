@@ -7,9 +7,9 @@ on:
         required: true
       MAVEN_GPG_PRIVATE_KEY:
         required: true
-      OSSRH_USERNAME:
+      MAVEN_CENTRAL_PASSWORD:
         required: true
-      OSSRH_TOKEN:
+      MAVEN_CENTRAL_USERNAME:
         required: true
       USER_EMAIL:
         required: true
@@ -58,14 +58,14 @@ jobs:
           java-version: 21
           distribution: 'temurin'
           cache: 'maven'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
 
       - name: Configure Git user
         run: |
@@ -80,8 +80,8 @@ jobs:
 
       - name: Perform release with Maven
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
         run: mvn -B release:perform -Darguments="-DskipTests -Dcentral.skipPublishing=false -Dcentral.autoPublish=true"
 
       - name: Get latest tag
