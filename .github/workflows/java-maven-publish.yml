@@ -49,7 +49,7 @@ jobs:
           git checkout -b "$BRANCH_NAME"
 
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec
         with:
           gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
@@ -105,7 +105,7 @@ jobs:
 
       - name: Build Changelog
         id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v5
+        uses: mikepenz/release-changelog-builder-action@c9dc8369bccbc41e0ac887f8fd674f5925d315f7
         with:
           fromTag: ${{ steps.from_tag.outputs.FROM_TAG }}
           toTag: ${{ steps.latest_tag.outputs.TO_TAG }}
