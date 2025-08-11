@@ -43,8 +43,10 @@ jobs:
           echo "BRANCH_NAME=release-$BASE_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create release branch
+        env:
+          BRANCH_NAME: ${{ steps.branch_name.outputs.BRANCH_NAME }}
         run: |
-          git checkout -b "${{ steps.branch_name.outputs.BRANCH_NAME }}"
+          git checkout -b "$BRANCH_NAME"
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
