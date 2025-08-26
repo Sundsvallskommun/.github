@@ -57,7 +57,7 @@ jobs:
           git_commit_gpgsign: true
 
       - name: Set up Maven Central Repository
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: 21
           distribution: 'temurin'
