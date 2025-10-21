@@ -121,6 +121,8 @@ jobs:
 
 Used to build images of a service and push the images to Github Container Registry along with a manifest.
 
+This workflow requires a Dockerfile at /docker/Dockerfile.
+
 ```
 name: "Call Build and Push Image"
 
