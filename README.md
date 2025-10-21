@@ -110,8 +110,26 @@ on:
 
 jobs:
   shared-workflows:
-        uses: Sundsvallskommun/.github/.github/workflows/java-maven-publish.yml@main
-        secrets: inherit
+    uses: Sundsvallskommun/.github/.github/workflows/java-maven-publish.yml@main
+    secrets: inherit
+
+```
+
+## 
+
+### Build and Push Image
+
+Used to build images of a service and push the images to Github Container Registry along with a manifest.
+
+```
+name: "Call Build and Push Image"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  shared-workflows:
+    uses: Sundsvallskommun/.github/.github/workflows/build-and-push.yml@main
 
 ```
 
