@@ -9,6 +9,11 @@ name: "Java CI with Maven"
 
 on:
   workflow_call:
+    inputs:
+      java:
+        required: false
+        type: string
+        default: "21"
 
 jobs:
   build:
@@ -16,14 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Set up JDK 21
+      - name: Set up JDK ${{ inputs.java }}
         uses: actions/setup-java@v5
         with:
-          java-version: "21"
+          java-version: ${{ inputs.java }}
           distribution: "temurin"
           cache: maven
       - name: Build with Maven
         env:
           TZ: "Europe/Stockholm"
         run: mvn -B verify --file pom.xml
-
