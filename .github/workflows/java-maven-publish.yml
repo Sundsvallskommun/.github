@@ -2,6 +2,11 @@ name: "Publish package to the Maven Central Repository"
 
 on:
   workflow_call:
+    inputs:
+      java:
+        required: false
+        type: string
+        default: "21"
     secrets:
       MAVEN_GPG_PASSPHRASE:
         required: true
