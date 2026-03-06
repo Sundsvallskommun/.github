@@ -1,0 +1,133 @@
+name: "Publish package to the Maven Central Repository"
+
+on:
+  workflow_call:
+    inputs:
+      java:
+        required: false
+        type: string
+        default: "21"
+    secrets:
+      MAVEN_GPG_PASSPHRASE:
+        required: true
+      MAVEN_GPG_PRIVATE_KEY:
+        required: true
+      MAVEN_CENTRAL_PASSWORD:
+        required: true
+      MAVEN_CENTRAL_USERNAME:
+        required: true
+      USER_EMAIL:
+        required: true
+      USER_NAME:
+        required: true
+      UTVECKLINGSFABRIKEN_TOKEN:
+        required: true
+
+jobs:
+  publish:
+    env:
+      GITHUB_TOKEN: ${{ secrets.UTVECKLINGSFABRIKEN_TOKEN }}
+      MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.UTVECKLINGSFABRIKEN_TOKEN }}
+          fetch-depth: 0
+
+      - name: Get from tag
+        id: from_tag
+        run: |
+          echo "FROM_TAG=$(git tag --sort=-creatordate | head -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Create release branch-name
+        id: branch_name
+        run: |
+          VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+          BASE_VERSION="$(awk -F- '{print $1}' <<< "$VERSION")"
+          echo "BRANCH_NAME=release-$BASE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create release branch
+        env:
+          BRANCH_NAME: ${{ steps.branch_name.outputs.BRANCH_NAME }}
+        run: |
+          git checkout -b "$BRANCH_NAME"
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd
+        with:
+          gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ inputs.java }}
+          distribution: "temurin"
+          cache: "maven"
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+
+      - name: Configure Git user
+        env:
+          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          USER_NAME: ${{ secrets.USER_NAME }}
+        run: |
+          git config --global user.email "$USER_EMAIL"
+          git config --global user.name "$USER_NAME"
+
+      - name: Prepare release with Maven
+        env:
+          MAVEN_USERNAME: ${{ secrets.USER_NAME }}
+          MAVEN_PASSWORD: ${{ secrets.UTVECKLINGSFABRIKEN_TOKEN }}
+        run: |
+          mvn -B release:prepare
+
+      - name: Perform release with Maven
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        run: mvn -B release:perform -Darguments="-DskipTests -Dcentral.skipPublishing=false -Dcentral.autoPublish=true"
+
+      - name: Get latest tag
+        id: latest_tag
+        run: |
+          echo "TO_TAG=$(git tag --sort=-creatordate | head -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Create pull request
+        env:
+          BRANCH_NAME: ${{ steps.branch_name.outputs.BRANCH_NAME }}
+        run: |
+          gh pr create -B main -H "$BRANCH_NAME" --title "PR for release $BRANCH_NAME" --body "PR for creating release $BRANCH_NAME"
+
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@a34a8009a9588bb86b02a873cf592440e96a5da8
+        with:
+          fromTag: ${{ steps.from_tag.outputs.FROM_TAG }}
+          toTag: ${{ steps.latest_tag.outputs.TO_TAG }}
+          configurationJson: |
+            {
+              "template": "## What's changed ## \n #{{UNCATEGORIZED}}\n\n"
+            }
+
+      - name: Create release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.UTVECKLINGSFABRIKEN_TOKEN }}
+          TO_TAG: ${{ steps.latest_tag.outputs.TO_TAG }}
+          FROM_TAG: ${{ steps.from_tag.outputs.FROM_TAG }}
+          CHANGELOG: ${{ steps.build_changelog.outputs.changelog }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          gh release create "$TO_TAG" \
+            --title "$TO_TAG" \
+            --notes "$CHANGELOG **Full Changelog**: https://github.com/$REPOSITORY/compare/$FROM_TAG...$TO_TAG"
