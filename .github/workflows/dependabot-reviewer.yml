@@ -1,0 +1,11 @@
+name: "Dependabot reviewer"
+permissions:
+  contents: write
+  pull-requests: write
+on: pull_request
+
+jobs:
+  dependabot-reviewer:
+    uses: Sundsvallskommun/.github/.github/workflows/common-dependabot-reviewer.yml@main
+    secrets:
+      UTVECKLINGSFABRIKEN_DEPENDABOT_AUTOREVIEW_TOKEN: ${{ secrets.UTVECKLINGSFABRIKEN_DEPENDABOT_AUTOREVIEW_TOKEN }}
