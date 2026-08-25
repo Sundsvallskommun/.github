@@ -31,3 +31,34 @@ jobs:
         env:
           TZ: "Europe/Stockholm"
         run: mvn -B verify --file pom.xml
+
+      # Produces an SPDX 2.3 SBOM from the fully resolved Maven dependency tree.
+      # Runs after the build on purpose: `mvn verify` has already warmed ~/.m2 in
+      # this runner, so Trivy resolves every parent/BOM pom locally.
+      # Skipped on pull requests; runs on pushes to main and on the weekly schedule.
+      - name: Generate SPDX SBOM
+        if: github.event_name != 'pull_request'
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8
+        with:
+          # Pinned so the same Trivy produces the SBOM here and in the API
+          # catalogue's refresh workflow; upgrading should be a deliberate change.
+          version: v0.74.0
+          scan-type: fs
+          scan-ref: .
+          format: spdx-json
+          output: sbom.spdx.json
+          scanners: license
+        env:
+          TRIVY_SKIP_DB_UPDATE: "true"
+          TRIVY_SKIP_JAVA_DB_UPDATE: "true"
+          # Resolve from the ~/.m2 that `mvn verify` just populated. Scanning online
+          # is non-deterministic under load: a throttled run silently reports
+          # licences as NOASSERTION rather than failing.
+          TRIVY_OFFLINE_SCAN: "true"
+      - name: Upload SBOM
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: sbom-spdx
+          path: sbom.spdx.json
+          if-no-files-found: error

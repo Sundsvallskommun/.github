@@ -119,7 +119,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false
-          sbom: false
+          # Attaches an SPDX attestation to the image: versioned, publicly
+          # inspectable, and tied to the artifact that actually runs in production.
+          sbom: true
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.version=${{ needs.meta.outputs.version }}
