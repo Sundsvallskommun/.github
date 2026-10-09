@@ -40,19 +40,6 @@ jobs:
         run: |
           echo "FROM_TAG=$(git tag --sort=-creatordate | head -1)" >> "$GITHUB_OUTPUT"
 
-      - name: Create release branch-name
-        id: branch_name
-        run: |
-          VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-          BASE_VERSION="$(awk -F- '{print $1}' <<< "$VERSION")"
-          echo "BRANCH_NAME=release-$BASE_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Create release branch
-        env:
-          BRANCH_NAME: ${{ steps.branch_name.outputs.BRANCH_NAME }}
-        run: |
-          git checkout -b "$BRANCH_NAME"
-
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd
         with:
@@ -68,8 +55,8 @@ jobs:
           distribution: "temurin"
           cache: "maven"
           server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
+          server-username-env-var: MAVEN_USERNAME
+          server-password-env-var: MAVEN_PASSWORD
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
@@ -86,6 +73,19 @@ jobs:
           echo "$MAVEN_SHA512  $RUNNER_TEMP/$ARCHIVE" | sha512sum -c -
           tar xzf "$RUNNER_TEMP/$ARCHIVE" -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/apache-maven-$MAVEN_VERSION/bin" >> "$GITHUB_PATH"
+
+      - name: Create release branch-name
+        id: branch_name
+        run: |
+          VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+          BASE_VERSION="$(awk -F- '{print $1}' <<< "$VERSION")"
+          echo "BRANCH_NAME=release-$BASE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create release branch
+        env:
+          BRANCH_NAME: ${{ steps.branch_name.outputs.BRANCH_NAME }}
+        run: |
+          git checkout -b "$BRANCH_NAME"
 
       - name: Configure Git user
         env:
